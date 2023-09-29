@@ -1,12 +1,17 @@
-from typing import Any, Callable
+from typing import Any, Callable, TypeAlias
+from pyoptional.pyoptional import PyOptional
 
 from ..common.os_detector import OSDetector
+
 
 if OSDetector.is_macos():
     from AppKit import NSScreen
 
-from .strategy import Strategy
+from .strategy import Strategy, T
 from ..common.monitor import Monitor
+
+
+F: TypeAlias = Callable[..., Any] | Any | None
 
 
 class AppKitStrategy(Strategy):
@@ -31,24 +36,22 @@ class AppKitStrategy(Strategy):
             raise ValueError("Invalid raw data.")
 
         for screen in screens:
-            data: dict[str, int | bool] = AppKitStrategy.__parse_screen(screen=screen)
+            data: dict[str, T] = self.parse_data(raw_data=screen)
             self.add_monitor(monitor=Monitor(data=data))
 
-    @staticmethod
-    def __parse_screen(screen: Any) -> dict[str, int | bool]:
+    def parse_data(self, raw_data: Any) -> dict[str, T]:
         successfully_parsed: bool = False
         width: int = -1
         height: int = -1
 
         try:
-            f: Callable[..., Any] | Any | None = screen.frame
+            f: PyOptional[F] = PyOptional[F].of_nullable(raw_data.frame)
 
-            if not f:
+            if f.empty():
                 raise ValueError("Invalid raw data.")
-            elif callable(f):
-                data: Any = f()
             else:
-                data: Any = f
+                unwrapped: F = f.or_else_raise()
+                data: Any = unwrapped() if callable(unwrapped) else unwrapped
 
             width = int(data.size.width)
             height = int(data.size.height)

@@ -1,6 +1,9 @@
-from typing import Any
+from typing import Any, TypeAlias
 
 from ..common.monitor import Monitor
+
+
+T: TypeAlias = int | bool
 
 
 class Strategy():
@@ -12,7 +15,7 @@ class Strategy():
         # This method must be implemented by subclasses.
         raise NotImplementedError()
 
-    def parse_data(self, raw_data: str) -> dict[str, int | bool]:
+    def parse_data(self, raw_data: Any) -> dict[str, T]:
         # This method must be implemented by subclasses.
         raise NotImplementedError()
 

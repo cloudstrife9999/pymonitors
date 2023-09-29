@@ -1,6 +1,7 @@
 from subprocess import Popen, PIPE
+from typing import Any
 
-from .strategy import Strategy
+from .strategy import Strategy, T
 from ..common.monitor import Monitor
 
 
@@ -37,16 +38,19 @@ class XrandrStrategy(Strategy):
 
     def __add_monitors(self, raw_lines: list[str]) -> None:
         for raw_line in raw_lines:
-            data: dict[str, int | bool] = self.parse_data(raw_data=raw_line)
+            data: dict[str, T] = self.parse_data(raw_data=raw_line)
 
             self.add_monitor(monitor=Monitor(data=data))
 
-    def parse_data(self, raw_data: str) -> dict[str, int | bool]:
+    def parse_data(self, raw_data: Any) -> dict[str, T]:
         successfully_parsed: bool = False
         width: int = -1
         height: int = -1
 
         try:
+            if not isinstance(raw_data, str):
+                raise ValueError("Invalid raw data.")
+
             tokens: list[str] = raw_data.split(" ")
 
             if "current" not in tokens:
