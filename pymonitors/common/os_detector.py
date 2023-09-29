@@ -11,3 +11,7 @@ class OSDetector():
     @staticmethod
     def is_macos() -> bool:
         return OSDetector.__get_os_name() == OSNames.MACOS.value
+
+    @staticmethod
+    def is_windows() -> bool:
+        return OSDetector.__get_os_name() == OSNames.WINDOWS.value

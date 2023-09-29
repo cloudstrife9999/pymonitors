@@ -37,6 +37,7 @@ class AppKitStrategy(Strategy):
 
         for screen in screens:
             data: dict[str, T] = self.parse_data(raw_data=screen)
+
             self.add_monitor(monitor=Monitor(data=data))
 
     def parse_data(self, raw_data: Any) -> dict[str, T]:
