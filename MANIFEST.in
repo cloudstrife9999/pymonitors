@@ -5,4 +5,7 @@ include *.md
 include LICENSE
 
 # Include py.typed
-include vacuumworld/py.typed
+include pymonitors/py.typed
+
+# Include the resources
+include pymonitors/res/*

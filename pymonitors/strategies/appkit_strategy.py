@@ -32,6 +32,10 @@ class AppKitStrategy(Strategy):
     def __look_for_monitors(self) -> None:
         screens: list[Any] = NSScreen.screens()
 
+        # TODO: remove this.
+        for screen in screens:
+            print(screen)
+
         if not isinstance(screens, list):
             raise ValueError("Invalid raw data.")
 
