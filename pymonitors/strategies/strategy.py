@@ -22,9 +22,14 @@ class Strategy():
     def add_monitor(self, monitor: Monitor) -> None:
         self.__monitors.append(monitor)
 
-    def print_error_message(self) -> None:
-        if self.__verbose:
-            print(f"INFO: {self.__class__.__name__} failed to identify a monitor.")
+    def print_error_message(self, message: str="") -> None:
+        if not self.__verbose:
+            return
+
+        if not message:
+            message = f"INFO: {self.__class__.__name__} failed to identify a monitor."
+
+        print(message)
 
     @property
     def monitors(self) -> list[Monitor]:
@@ -32,4 +37,12 @@ class Strategy():
 
     @monitors.setter
     def monitors(self, _: Any) -> None:
+        raise AttributeError("Read only property.")
+
+    @property
+    def verbose(self) -> bool:
+        return self.__verbose
+
+    @verbose.setter
+    def verbose(self, _: Any) -> None:
         raise AttributeError("Read only property.")

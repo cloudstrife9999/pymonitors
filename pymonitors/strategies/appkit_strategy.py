@@ -21,8 +21,7 @@ class AppKitStrategy(Strategy):
     def run(self) -> None:
         try:
             if not OSDetector.is_macos():
-                print(f"ERROR: {self.__class__.__name__} is only supported on macOS.")
-
+                self.print_error_message(f"ERROR: {self.__class__.__name__} is only supported on macOS.")
                 self.print_error_message()
             else:
                 self.__look_for_monitors()

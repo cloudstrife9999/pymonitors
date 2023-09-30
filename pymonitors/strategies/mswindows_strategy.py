@@ -15,8 +15,7 @@ class MSWindowsStrategy(Strategy):
     def run(self) -> None:
         try:
             if not OSDetector.is_windows():
-                print(f"ERROR: {self.__class__.__name__} is only supported on Microsoft Windows.")
-
+                self.print_error_message(message=f"ERROR: {self.__class__.__name__} is only supported on Microsoft Windows.")
                 self.print_error_message()
 
                 return
@@ -45,8 +44,8 @@ class MSWindowsStrategy(Strategy):
             if not isinstance(raw_data, str):
                 raise ValueError("Invalid raw data.")
 
-            tokens: list[str] = raw_data.split(" ")
-
+            newline: str = "\n" if "\n" in raw_data else "\r"
+            tokens: list[str] = raw_data.split(newline)
             width = int(tokens[0].replace("\n", "").replace("\r", ""))
             height = int(tokens[1].replace("\n", "").replace("\r", ""))
             successfully_parsed = True
