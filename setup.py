@@ -20,7 +20,7 @@ classifiers: list[str] = [
     "Operating System :: OS Independent",
 ]
 
-dependencies: list[str] = ["wheel", "pyjoptional>=1.1.0", "pytest"]
+dependencies: list[str] = ["wheel", "pyjoptional>=1.1.0"]
 
 if OSDetector.is_macos():
     dependencies += ["AppKit", "pyobjc"]
