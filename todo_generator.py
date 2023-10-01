@@ -5,29 +5,28 @@ Please run this file as ./todo_generator.py from within its parent directory.
 Otherwise, the paths will not be generated/printed correctly.
 '''
 
-from typing import List
-
 import os
 
 
-INTERESTING_FILES_EXTENSIONS: List[str] = [".py"]
-FILES_EXCLUSION_LIST: List[str] = [os.path.basename(__file__)]
-DIR_EXCLUSION_LIST: List[str] = ["examples_not_to_commit"]
+INTERESTING_FILES_EXTENSIONS: list[str] = [".py"]
+FILES_EXCLUSION_LIST: list[str] = [os.path.basename(__file__)]
+DIR_EXCLUSION_LIST_PREFIX: str = os.path.dirname(os.path.dirname(__file__))
+DIR_EXCLUSION_LIST: list[str] = [os.path.join(DIR_EXCLUSION_LIST_PREFIX, directory) for directory in ["examples_not_to_commit", "build", ".git"]]
 TODO_FILE: str = "TODO.md"
 TODO_PATTERN: str = "TODO"
 TODO_HEADER: str = "# List of TODOs"
 
 
 def main() -> None:
-    lines: List[str] = []
+    lines: list[str] = []
 
-    for dir, _, files in os.walk(os.getcwd()):
-        if os.path.basename(dir) in DIR_EXCLUSION_LIST:
+    for d, _, files in os.walk(os.getcwd()):
+        if any([d.startswith(excluded_dir) for excluded_dir in DIR_EXCLUSION_LIST]):
             continue
 
-        for f in filter(lambda candidate: any(filter(lambda ext: isinstance(ext, str) and candidate.endswith(ext), INTERESTING_FILES_EXTENSIONS)), files):
+        for f in filter(lambda candidate: any([candidate.endswith(ext) for ext in INTERESTING_FILES_EXTENSIONS]), files):
             if f not in FILES_EXCLUSION_LIST:
-                lines += __look_for_todos(os.path.join(dir, f))
+                lines += __look_for_todos(os.path.join(d, f))
 
     with open(TODO_FILE, "w") as f:
         f.write(TODO_HEADER + "\n")
@@ -41,11 +40,11 @@ def main() -> None:
         f.flush()
 
 
-def __look_for_todos(path: str) -> List[str]:
-    to_add: List[str] = []
+def __look_for_todos(path: str) -> list[str]:
+    to_add: list[str] = []
     path_to_print: str = __get_relative_path(absolute_path=path)
-    prefix: str = "* File {} - line ".format(path_to_print)
-    lines: List[str] = []
+    prefix: str = f"* File {path_to_print} - line "
+    lines: list[str] = []
 
     with open(path, "r") as f:
         lines = f.readlines()
@@ -54,20 +53,23 @@ def __look_for_todos(path: str) -> List[str]:
         line_number = i + 1
 
         if TODO_PATTERN in lines[i]:
-            to_add.append(prefix + "{}: `{}`".format(line_number, lines[i].strip().replace("`", "'")))
+            backtick: str = "`"
+            single_quote: str = "'"
+
+            to_add.append(f"{prefix}{line_number}: `{lines[i].strip().replace(backtick, single_quote)}`")
 
     return to_add
 
 
 def __get_relative_path(absolute_path: str) -> str:
-    tokens: List[str] = absolute_path.split(os.path.sep)
+    tokens: list[str] = absolute_path.split(os.path.sep)
     vw_top_dir: str = os.path.basename(os.getcwd())
 
     while tokens[0] != vw_top_dir:
         tokens = tokens[1:]
 
         if len(tokens) < 2:
-            raise ValueError("Malformed path: {}".format(absolute_path))
+            raise ValueError(f"Malformed path: {absolute_path}")
 
     tokens = tokens[1:]
 
