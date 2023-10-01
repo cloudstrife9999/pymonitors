@@ -61,6 +61,8 @@ class AppKitStrategy(Strategy):
             height = int(data.size.height)
             successfully_parsed = True
         except Exception:
+            from traceback import print_exc  # TODO: remove this.
+            print_exc()
             successfully_parsed = False
 
         return {
