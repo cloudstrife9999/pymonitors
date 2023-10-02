@@ -7,6 +7,10 @@ from pymonitors.common.os_detector import OSDetector
 
 name: str = "pymonitors"
 description: str = "PyMonitors: a Python library to obtain info about available screens (monitors)."
+
+with open("README.md", "r") as f:
+    long_description = f.read()
+
 author: str = "Emanuele Uliana"
 author_email: str = "vw@dicelab-rhul.org"
 license: str = "GNU3"
@@ -29,8 +33,9 @@ if OSDetector.is_macos():
 
 setup(
     name=name,
-    version="1.0.0",
+    version="1.0.1",
     description=description,
+    long_description=long_description,
     url="https://github.com/cloudstrife9999/pymonitors",
     author=author,
     author_email=author_email,
