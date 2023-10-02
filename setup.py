@@ -36,6 +36,7 @@ setup(
     version="1.0.1",
     description=description,
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/cloudstrife9999/pymonitors",
     author=author,
     author_email=author_email,
