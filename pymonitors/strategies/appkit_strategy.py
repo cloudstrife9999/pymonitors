@@ -1,4 +1,4 @@
-from typing import Any, Callable, TypeAlias
+from typing import Any, Callable, TypeAlias, Iterable
 from pyoptional.pyoptional import PyOptional
 
 from ..common.os_detector import OSDetector
@@ -31,17 +31,14 @@ class AppKitStrategy(Strategy):
     def __look_for_monitors(self) -> None:
         screens: list[Any] = NSScreen.screens()
 
-        # TODO: remove this.
-        for screen in screens:
-            print(screen)
-
-        if not isinstance(screens, list):
+        if not isinstance(screens, Iterable):
             raise ValueError("Invalid raw data.")
 
         for screen in screens:
             data: dict[str, T] = self.parse_data(raw_data=screen)
 
-            self.add_monitor(monitor=Monitor(data=data))
+            if data["successfully_parsed"]:
+                self.add_monitor(monitor=Monitor(data=data))
 
     def parse_data(self, raw_data: Any) -> dict[str, T]:
         successfully_parsed: bool = False
@@ -51,7 +48,7 @@ class AppKitStrategy(Strategy):
         try:
             f: PyOptional[F] = PyOptional[F].of_nullable(raw_data.frame)
 
-            if f.empty():
+            if f.is_empty():
                 raise ValueError("Invalid raw data.")
             else:
                 unwrapped: F = f.or_else_raise()
@@ -61,8 +58,6 @@ class AppKitStrategy(Strategy):
             height = int(data.size.height)
             successfully_parsed = True
         except Exception:
-            from traceback import print_exc  # TODO: remove this.
-            print_exc()
             successfully_parsed = False
 
         return {
